@@ -54,8 +54,8 @@ html,body{min-height:100vh;overflow-x:hidden}
 }
 .topbar{position:fixed;top:0;left:0;right:0;z-index:10;background:rgba(0,0,0,.92);border-bottom:1px solid rgba(123,0,255,.4);padding:8px 20px;display:flex;justify-content:space-between;align-items:center;font-size:.65rem;letter-spacing:.15em}
 .topbar .left{color:#9B30FF}
-.topbar .center{color:#FF1A1A;animation:blink 1s step-end infinite}
-.topbar .right{color:#9B30FF}
+.topbar .center{color:#9B30FF;animation:blink 1s step-end infinite}
+.topbar .right{color:rgba(0,255,65,.5)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 .p2-inner{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:24px;width:100%;max-width:680px}
 .skull-wrap{animation:glitch 3s infinite}
@@ -144,10 +144,10 @@ html,body{min-height:100vh;overflow-x:hidden}
     <div class="terminal">
       <div class="terminal-header">
         <div class="t-dot r"></div><div class="t-dot y"></div><div class="t-dot g"></div>
-        <div class="t-title">root@18-de-maio — bash — 80×24</div>
+        <div class="t-title">root@18_de_maio — bash — 80×24</div>
       </div>
       <div class="terminal-body">
-        <div class="log-line" id="l0"><span class="prompt">root@sistema:~$</span> ./infiltrar --alvo 18_de_maio</div>
+        <div class="log-line" id="l0"><span class="prompt">root@sistema:~$</span> ./infiltrar --alvo evento_18maio</div>
         <div class="log-line" id="l1"><span class="ok">[✔]</span> Conexão estabelecida com servidor remoto...</div>
         <div class="log-line" id="l2"><span class="ok">[✔]</span> Firewall bypassado em <span class="val">0.003s</span></div>
         <div class="log-line" id="l3"><span class="warn">[!]</span> Banco de dados localizado — iniciando dump...</div>
@@ -166,57 +166,50 @@ html,body{min-height:100vh;overflow-x:hidden}
 </div>
 
 <script>
- const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz4ZuetBsiQKU925NxYR_n-Wf6_eZ-43h_uwNstOxA/dev';
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz4ZuetBsiQKU925NxYR_n-Wf6_eZ-43h_uwNstOxA/exec';
 
   function detectDevice() {
   const ua = navigator.userAgent;
+  const platform = navigator.platform || '';
 
-  let os = "Desconhecido";
-  let device = "Computador";
+  const isIPhone = /iPhone|iPod/i.test(ua);
+  const isIPad   = /iPad/i.test(ua) || 
+                   (/Mac/i.test(platform) && navigator.maxTouchPoints > 1);
+  const isIOS    = isIPhone || isIPad;
 
-  if (/Android/i.test(ua)) {
-    os = "Android";
-    device = "Celular";
-  }
-  else if (/iPhone|iPad|iPod/i.test(ua)) {
-    os = "iOS";
-    device = "Celular";
-  }
-  else if (/Mac/i.test(ua)) {
-    os = "macOS";
-  }
-  else if (/Windows/i.test(ua)) {
-    os = "Windows";
-  }
-  else if (/Linux/i.test(ua)) {
-    os = "Linux";
-  }
+  const isAndroid = /Android/i.test(ua);
+  const isMac     = /Mac OS X/i.test(ua) && !isIOS && navigator.maxTouchPoints <= 1;
+  const isWindows = /Windows NT/i.test(ua);
+  const isLinux   = /Linux/i.test(ua) && !isAndroid;
 
-  return { device, os };
+  let os = 'Desconhecido';
+  if (isIOS)     os = isIPad ? 'iOS (iPad)' : 'iOS';
+  else if (isAndroid) os = 'Android';
+  else if (isMac)     os = 'macOS';
+  else if (isWindows) os = 'Windows';
+  else if (isLinux)   os = 'Linux';
+
+  const isMobile = isIOS || isAndroid || 
+                   /BlackBerry|Windows Phone/i.test(ua);
+
+  return { device: isMobile ? 'Celular' : 'Computador', os };
 }
 
-  async function enviarParaSheet(nome, telefone, device, os) {
+  function enviarParaSheet(nome, telefone, device, os) {
   const params = new URLSearchParams({
-    nome,
-    telefone,
-    device,
-    os,
-    dataHora: new Date().toLocaleString("pt-BR")
+    nome, telefone, device, os,
+    dataHora: new Date().toLocaleString('pt-BR')
   });
-
-  console.log(params.toString()); // <-- add
-
-  try {
-    const resposta = await fetch(`${SHEET_URL}?${params.toString()}`);
-    const json = await resposta.json();
-    console.log(json);
-    return true;
-  } catch (erro) {
-    console.error("Erro real:", erro);
-    return false;
-  }
-}
   
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.src = SHEET_URL + '?' + params.toString();
+  document.body.appendChild(iframe);
+  
+  setTimeout(() => {
+    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+  }, 5000);
+}
 
   const dotsEl = document.getElementById('dots1');
   const colors = ['#FF6B1A','#FF8C42','#FF3E82','#FF6FA3','#FFB347','#FF85A1'];
@@ -238,28 +231,25 @@ html,body{min-height:100vh;overflow-x:hidden}
   });
 
   
- document.getElementById('eventForm').addEventListener('submit', async function(e) {
+  document.getElementById('eventForm').addEventListener('submit', function(e) {
   e.preventDefault();
+  const nome = document.getElementById('nome').value;
+  const tel  = document.getElementById('telefone').value;
+  const { device, os } = detectDevice();
 
-  const nome = document.getElementById('nome').value.trim();
-  const telefone = document.getElementById('telefone').value.trim();
-  const info = detectDevice();
+  enviarParaSheet(nome, tel, device, os);
 
-  console.log({
-    nome,
-    telefone,
-    device: info.device,
-    os: info.os
-  });
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'Infiltrando…';
+  btn.disabled = true;
 
-  await enviarParaSheet(
-    nome,
-    telefone,
-    info.device,
-    info.os
-  );
-
-  startPage2();
+  setTimeout(() => {
+    document.getElementById('page1').classList.add('fade-out');
+    setTimeout(() => {
+      document.getElementById('page1').style.display = 'none';
+      startPage2();
+    }, 600);
+  }, 1500);
 });
 
   function voltarInicio() {
@@ -273,9 +263,9 @@ html,body{min-height:100vh;overflow-x:hidden}
     document.getElementById('eventForm').reset();
     document.querySelectorAll('.log-line').forEach(el => el.classList.remove('show'));
     document.getElementById('progWrap').classList.remove('show');
-    document.getElementById('infoGrid')?.classList.remove('show');
-    document.getElementById('finalMsg')?.classList.remove('show');
-    document.getElementById('ctaWrap')?.classList.remove('show');
+    document.getElementById('infoGrid').classList.remove('show');
+    document.getElementById('finalMsg').classList.remove('show');
+    document.getElementById('ctaWrap').classList.remove('show');
     document.getElementById('progFill').style.width = '0%';
     matrixStarted = false;
   }
@@ -347,13 +337,13 @@ html,body{min-height:100vh;overflow-x:hidden}
     await showLine('l4', 300);
     await showLine('l5', 900);
     await new Promise(r => setTimeout(r, 1100));
-    document.getElementById('infoGrid')?.classList.add('show');
+    document.getElementById('infoGrid').classList.add('show');
     await showLine('l6', 1400);
     await showLine('l7', 2100);
     await new Promise(r => setTimeout(r, 700));
-    document.getElementById('finalMsg')?.classList.add('show');
+    document.getElementById('finalMsg').classList.add('show');
     await new Promise(r => setTimeout(r, 900));
-    document.getElementById('ctaWrap')?.classList.add('show');
+    document.getElementById('ctaWrap').classList.add('show');
   }
 </script>
 </body>
