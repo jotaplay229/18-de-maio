@@ -212,15 +212,6 @@ html,body{min-height:100vh;overflow-x:hidden}
   .catch(err => console.error(err));
 }
   
-  const iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  iframe.src = SHEET_URL + '?' + params.toString();
-  document.body.appendChild(iframe);
-  
-  setTimeout(() => {
-    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-  }, 5000);
-}
 
   const dotsEl = document.getElementById('dots1');
   const colors = ['#FF6B1A','#FF8C42','#FF3E82','#FF6FA3','#FFB347','#FF85A1'];
@@ -274,9 +265,9 @@ html,body{min-height:100vh;overflow-x:hidden}
     document.getElementById('eventForm').reset();
     document.querySelectorAll('.log-line').forEach(el => el.classList.remove('show'));
     document.getElementById('progWrap').classList.remove('show');
-    document.getElementById('infoGrid').classList.remove('show');
-    document.getElementById('finalMsg').classList.remove('show');
-    document.getElementById('ctaWrap').classList.remove('show');
+    document.getElementById('infoGrid')?.classList.remove('show');
+    document.getElementById('finalMsg')?.classList.remove('show');
+    document.getElementById('ctaWrap')?.classList.remove('show');
     document.getElementById('progFill').style.width = '0%';
     matrixStarted = false;
   }
