@@ -188,13 +188,20 @@ html,body{min-height:100vh;overflow-x:hidden}
   return { device: isMobile ? 'Celular' : 'Computador', os };
 }
 
-  function enviarParaSheet(nome, telefone, device, os) {
-    const params = new URLSearchParams({
-      nome, telefone, device, os,
-      dataHora: new Date().toLocaleString('pt-BR')
+  async function enviarParaSheet(nome, telefone, device, os) {
+  const params = new URLSearchParams({
+    nome, telefone, device, os,
+    dataHora: new Date().toLocaleString('pt-BR')
+  });
+  try {
+    await fetch(SHEET_URL + '?' + params.toString(), {
+      method: 'GET',
+      mode: 'no-cors'
     });
-    new Image().src = SHEET_URL + '?' + params.toString();
+  } catch (err) {
+    console.error('Erro ao enviar:', err);
   }
+}
 
   const dotsEl = document.getElementById('dots1');
   const colors = ['#FF6B1A','#FF8C42','#FF3E82','#FF6FA3','#FFB347','#FF85A1'];
@@ -216,26 +223,26 @@ html,body{min-height:100vh;overflow-x:hidden}
   });
 
   
-  document.getElementById('eventForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const nome = document.getElementById('nome').value;
-    const tel  = document.getElementById('telefone').value;
-    const { device, os } = detectDevice();
+  document.getElementById('eventForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const nome = document.getElementById('nome').value;
+  const tel  = document.getElementById('telefone').value;
+  const { device, os } = detectDevice();
 
-    enviarParaSheet(nome, tel, device, os);
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'Infiltrando…';
+  btn.disabled = true;
 
-    const btn = document.getElementById('submitBtn');
-    btn.textContent = 'Infiltrando…';
-    btn.disabled = true;
+  await enviarParaSheet(nome, tel, device, os); // aguarda a requisição terminar
 
+  setTimeout(() => {
+    document.getElementById('page1').classList.add('fade-out');
     setTimeout(() => {
-      document.getElementById('page1').classList.add('fade-out');
-      setTimeout(() => {
-        document.getElementById('page1').style.display = 'none';
-        startPage2();
-      }, 600);
-    }, 700);
-  });
+      document.getElementById('page1').style.display = 'none';
+      startPage2();
+    }, 600);
+  }, 700);
+});
 
   function voltarInicio() {
     document.getElementById('page2').style.display = 'none';
