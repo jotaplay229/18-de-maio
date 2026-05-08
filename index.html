@@ -205,16 +205,14 @@ html,body{min-height:100vh;overflow-x:hidden}
   });
 
   try {
-    await fetch(SHEET_URL + "?" + params.toString(), {
-      method: "GET",
-      mode: "no-cors"
-    });
+    const res = await fetch(SHEET_URL + "?" + params.toString());
+    const txt = await res.text();
 
-    console.log("salvo");
+    console.log("Resposta:", txt);
     return true;
 
   } catch (erro) {
-    console.error(erro);
+    console.error("Erro real:", erro);
     return false;
   }
 }
