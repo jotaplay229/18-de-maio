@@ -166,7 +166,7 @@ html,body{min-height:100vh;overflow-x:hidden}
 </div>
 
 <script>
-  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz4ZuetBsiQKU925NxYR_n-Wf6_eZ-43h_uwNstOxA/dev';
+ const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz4ZuetBsiQKU925NxYR_n-Wf6_eZ-43h_uwNstOxA/dev';
 
   function detectDevice() {
   const ua = navigator.userAgent;
@@ -204,16 +204,13 @@ html,body{min-height:100vh;overflow-x:hidden}
     dataHora: new Date().toLocaleString("pt-BR")
   });
 
-  try {
-    const resposta = await fetch(
-      `${SHEET_URL}?${params.toString()}`
-    );
+  console.log(params.toString()); // <-- add
 
+  try {
+    const resposta = await fetch(`${SHEET_URL}?${params.toString()}`);
     const json = await resposta.json();
     console.log(json);
-
     return true;
-
   } catch (erro) {
     console.error("Erro real:", erro);
     return false;
@@ -241,30 +238,28 @@ html,body{min-height:100vh;overflow-x:hidden}
   });
 
   
-  document.getElementById('eventForm').addEventListener('submit', async function(e) {
+ document.getElementById('eventForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
-  const nome = document.getElementById('nome').value;
-  const tel = document.getElementById('telefone').value;
-  const { device, os } = detectDevice();
+  const nome = document.getElementById('nome').value.trim();
+  const telefone = document.getElementById('telefone').value.trim();
+  const info = detectDevice();
 
-  const btn = document.getElementById('submitBtn');
-  btn.textContent = 'Salvando...';
-  btn.disabled = true;
+  console.log({
+    nome,
+    telefone,
+    device: info.device,
+    os: info.os
+  });
 
-  await enviarParaSheet(nome, tel, device, os);
+  await enviarParaSheet(
+    nome,
+    telefone,
+    info.device,
+    info.os
+  );
 
-  btn.textContent = 'Infiltrando…';
-
-  setTimeout(() => {
-    document.getElementById('page1').classList.add('fade-out');
-
-    setTimeout(() => {
-      document.getElementById('page1').style.display = 'none';
-      startPage2();
-    }, 600);
-
-  }, 800);
+  startPage2();
 });
 
   function voltarInicio() {
