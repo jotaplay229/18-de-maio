@@ -121,7 +121,7 @@ html,body{min-height:100vh;overflow-x:hidden}
   </div>
 </div>
 
-<!-- ══ PÁGINA 2 ══ -->
+
 <div id="page2">
   <canvas id="matrix"></canvas>
   <div class="scanlines"></div>
@@ -182,7 +182,6 @@ html,body{min-height:100vh;overflow-x:hidden}
     new Image().src = SHEET_URL + '?' + params.toString();
   }
 
-  /* DOTS */
   const dotsEl = document.getElementById('dots1');
   const colors = ['#FF6B1A','#FF8C42','#FF3E82','#FF6FA3','#FFB347','#FF85A1'];
   for (let i = 0; i < 28; i++) {
@@ -193,7 +192,7 @@ html,body{min-height:100vh;overflow-x:hidden}
     dotsEl.appendChild(d);
   }
 
-  /* Máscara telefone */
+  
   document.getElementById('telefone').addEventListener('input', function() {
     let v = this.value.replace(/\D/g,'').slice(0,11);
     if (v.length > 6)      v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
@@ -202,7 +201,7 @@ html,body{min-height:100vh;overflow-x:hidden}
     this.value = v;
   });
 
-  /* SUBMIT */
+  
   document.getElementById('eventForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const nome = document.getElementById('nome').value;
