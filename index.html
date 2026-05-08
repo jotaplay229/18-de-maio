@@ -193,8 +193,15 @@ html,body{min-height:100vh;overflow-x:hidden}
     nome, telefone, device, os,
     dataHora: new Date().toLocaleString('pt-BR')
   });
-  const img = new Image();
-  img.src = SHEET_URL + '?' + params.toString();
+  
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.src = SHEET_URL + '?' + params.toString();
+  document.body.appendChild(iframe);
+  
+  setTimeout(() => {
+    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+  }, 5000);
 }
 
   const dotsEl = document.getElementById('dots1');
