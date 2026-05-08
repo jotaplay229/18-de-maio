@@ -188,19 +188,15 @@ html,body{min-height:100vh;overflow-x:hidden}
   return { device: isMobile ? 'Celular' : 'Computador', os };
 }
 
-  async function enviarParaSheet(nome, telefone, device, os) {
-  const params = new URLSearchParams({
-    nome, telefone, device, os,
-    dataHora: new Date().toLocaleString('pt-BR')
-  });
-  try {
-    await fetch(SHEET_URL + '?' + params.toString(), {
-      method: 'GET',
-      mode: 'no-cors'
-    });
-  } catch (err) {
-    console.error('Erro ao enviar:', err);
-  }
+  function enviarParaSheet(nome, telefone, device, os) {
+  const data = new FormData();
+  data.append('nome', nome);
+  data.append('telefone', telefone);
+  data.append('device', device);
+  data.append('os', os);
+  data.append('dataHora', new Date().toLocaleString('pt-BR'));
+
+  navigator.sendBeacon(SHEET_URL, data); 
 }
 
   const dotsEl = document.getElementById('dots1');
@@ -223,17 +219,17 @@ html,body{min-height:100vh;overflow-x:hidden}
   });
 
   
-  document.getElementById('eventForm').addEventListener('submit', async function(e) {
+  document.getElementById('eventForm').addEventListener('submit', function(e) {
   e.preventDefault();
   const nome = document.getElementById('nome').value;
   const tel  = document.getElementById('telefone').value;
   const { device, os } = detectDevice();
 
+  enviarParaSheet(nome, tel, device, os); 
+
   const btn = document.getElementById('submitBtn');
   btn.textContent = 'Infiltrando…';
   btn.disabled = true;
-
-  await enviarParaSheet(nome, tel, device, os); // aguarda a requisição terminar
 
   setTimeout(() => {
     document.getElementById('page1').classList.add('fade-out');
