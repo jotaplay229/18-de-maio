@@ -166,7 +166,7 @@ html,body{min-height:100vh;overflow-x:hidden}
 </div>
 
 <script>
-  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz4ZuetBsiQKU925NxYR_n-Wf6_eZ-43h_uwNstOxA/exec';
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz4ZuetBsiQKU925NxYR_n-Wf6_eZ-43h_uwNstOxA/dev';
 
   function detectDevice() {
   const ua = navigator.userAgent;
@@ -205,10 +205,13 @@ html,body{min-height:100vh;overflow-x:hidden}
   });
 
   try {
-    const res = await fetch(SHEET_URL + "?" + params.toString());
-    const txt = await res.text();
+    const resposta = await fetch(
+      `${SHEET_URL}?${params.toString()}`
+    );
 
-    console.log("Resposta:", txt);
+    const json = await resposta.json();
+    console.log(json);
+
     return true;
 
   } catch (erro) {
