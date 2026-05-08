@@ -193,9 +193,8 @@ html,body{min-height:100vh;overflow-x:hidden}
     nome, telefone, device, os,
     dataHora: new Date().toLocaleString('pt-BR')
   });
-
-  const blob = new Blob([params.toString()], { type: 'application/x-www-form-urlencoded' });
-  navigator.sendBeacon(SHEET_URL, blob);
+  const img = new Image();
+  img.src = SHEET_URL + '?' + params.toString();
 }
 
   const dotsEl = document.getElementById('dots1');
@@ -224,7 +223,7 @@ html,body{min-height:100vh;overflow-x:hidden}
   const tel  = document.getElementById('telefone').value;
   const { device, os } = detectDevice();
 
-  enviarParaSheet(nome, tel, device, os); 
+  enviarParaSheet(nome, tel, device, os);
 
   const btn = document.getElementById('submitBtn');
   btn.textContent = 'Infiltrando…';
@@ -236,7 +235,7 @@ html,body{min-height:100vh;overflow-x:hidden}
       document.getElementById('page1').style.display = 'none';
       startPage2();
     }, 600);
-  }, 700);
+  }, 1500);
 });
 
   function voltarInicio() {
