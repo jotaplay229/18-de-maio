@@ -92,7 +92,6 @@ html,body{min-height:100vh;overflow-x:hidden}
 </head>
 <body>
 
-<!-- ══ PÁGINA 1 ══ -->
 <div id="page1">
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
@@ -163,16 +162,31 @@ html,body{min-height:100vh;overflow-x:hidden}
   const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz4ZuetBsiQKU925NxYR_n-Wf6_eZ-43h_uwNstOxA/exec';
 
   function detectDevice() {
-    const ua = navigator.userAgent;
-    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(ua);
-    let os = 'Desconhecido';
-    if (/Windows NT/i.test(ua))       os = 'Windows';
-    else if (/Mac OS X/i.test(ua) && !/iPhone|iPad/.test(ua)) os = 'macOS';
-    else if (/Android/i.test(ua))     os = 'Android';
-    else if (/iPhone|iPad/i.test(ua)) os = 'iOS';
-    else if (/Linux/i.test(ua))       os = 'Linux';
-    return { device: isMobile ? 'Celular' : 'Computador', os };
-  }
+  const ua = navigator.userAgent;
+  const platform = navigator.platform || '';
+
+  const isIPhone = /iPhone|iPod/i.test(ua);
+  const isIPad   = /iPad/i.test(ua) || 
+                   (/Mac/i.test(platform) && navigator.maxTouchPoints > 1);
+  const isIOS    = isIPhone || isIPad;
+
+  const isAndroid = /Android/i.test(ua);
+  const isMac     = /Mac OS X/i.test(ua) && !isIOS && navigator.maxTouchPoints <= 1;
+  const isWindows = /Windows NT/i.test(ua);
+  const isLinux   = /Linux/i.test(ua) && !isAndroid;
+
+  let os = 'Desconhecido';
+  if (isIOS)     os = isIPad ? 'iOS (iPad)' : 'iOS';
+  else if (isAndroid) os = 'Android';
+  else if (isMac)     os = 'macOS';
+  else if (isWindows) os = 'Windows';
+  else if (isLinux)   os = 'Linux';
+
+  const isMobile = isIOS || isAndroid || 
+                   /BlackBerry|Windows Phone/i.test(ua);
+
+  return { device: isMobile ? 'Celular' : 'Computador', os };
+}
 
   function enviarParaSheet(nome, telefone, device, os) {
     const params = new URLSearchParams({
