@@ -195,21 +195,28 @@ html,body{min-height:100vh;overflow-x:hidden}
   return { device, os };
 }
 
-  function enviarParaSheet(nome, telefone, device, os) {
+  async function enviarParaSheet(nome, telefone, device, os) {
   const params = new URLSearchParams({
     nome,
     telefone,
     device,
     os,
-    dataHora: new Date().toLocaleString('pt-BR')
+    dataHora: new Date().toLocaleString("pt-BR")
   });
 
-  fetch(SHEET_URL + "?" + params.toString(), {
-    method: "GET",
-    mode: "no-cors"
-  })
-  .then(() => console.log("salvo"))
-  .catch(err => console.error(err));
+  try {
+    await fetch(SHEET_URL + "?" + params.toString(), {
+      method: "GET",
+      mode: "no-cors"
+    });
+
+    console.log("salvo");
+    return true;
+
+  } catch (erro) {
+    console.error(erro);
+    return false;
+  }
 }
   
 
@@ -233,25 +240,30 @@ html,body{min-height:100vh;overflow-x:hidden}
   });
 
   
-  document.getElementById('eventForm').addEventListener('submit', function(e) {
+  document.getElementById('eventForm').addEventListener('submit', async function(e) {
   e.preventDefault();
+
   const nome = document.getElementById('nome').value;
-  const tel  = document.getElementById('telefone').value;
+  const tel = document.getElementById('telefone').value;
   const { device, os } = detectDevice();
 
-  enviarParaSheet(nome, tel, device, os);
-
   const btn = document.getElementById('submitBtn');
-  btn.textContent = 'Infiltrando…';
+  btn.textContent = 'Salvando...';
   btn.disabled = true;
+
+  await enviarParaSheet(nome, tel, device, os);
+
+  btn.textContent = 'Infiltrando…';
 
   setTimeout(() => {
     document.getElementById('page1').classList.add('fade-out');
+
     setTimeout(() => {
       document.getElementById('page1').style.display = 'none';
       startPage2();
     }, 600);
-  }, 1500);
+
+  }, 800);
 });
 
   function voltarInicio() {
