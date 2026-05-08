@@ -351,13 +351,13 @@ html,body{min-height:100vh;overflow-x:hidden}
     await showLine('l4', 300);
     await showLine('l5', 900);
     await new Promise(r => setTimeout(r, 1100));
-    document.getElementById('infoGrid').classList.add('show');
+    document.getElementById('infoGrid')?.classList.add('show');
     await showLine('l6', 1400);
     await showLine('l7', 2100);
     await new Promise(r => setTimeout(r, 700));
-    document.getElementById('finalMsg').classList.add('show');
+    document.getElementById('finalMsg')?.classList.add('show');
     await new Promise(r => setTimeout(r, 900));
-    document.getElementById('ctaWrap').classList.add('show');
+    document.getElementById('ctaWrap')?.classList.add('show');
   }
 </script>
 </body>
