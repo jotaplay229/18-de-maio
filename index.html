@@ -189,14 +189,13 @@ html,body{min-height:100vh;overflow-x:hidden}
 }
 
   function enviarParaSheet(nome, telefone, device, os) {
-  const data = new FormData();
-  data.append('nome', nome);
-  data.append('telefone', telefone);
-  data.append('device', device);
-  data.append('os', os);
-  data.append('dataHora', new Date().toLocaleString('pt-BR'));
+  const params = new URLSearchParams({
+    nome, telefone, device, os,
+    dataHora: new Date().toLocaleString('pt-BR')
+  });
 
-  navigator.sendBeacon(SHEET_URL, data); 
+  const blob = new Blob([params.toString()], { type: 'application/x-www-form-urlencoded' });
+  navigator.sendBeacon(SHEET_URL, blob);
 }
 
   const dotsEl = document.getElementById('dots1');
