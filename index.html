@@ -173,6 +173,38 @@ html,body{min-height:100vh;overflow-x:hidden}
 </div>
 
 <script>
+
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzQRhAI-BRMa25RKbC55FrHvVFfX4alED3gP_lfMwuxbZ1VWhnLMt7bfVLGBen6DkaC/exec';
+
+  function detectDevice() {
+    const ua = navigator.userAgent;
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(ua);
+    let os = 'Desconhecido';
+    if (/Windows NT/i.test(ua))       os = 'Windows';
+    else if (/Mac OS X/i.test(ua) && !/iPhone|iPad/.test(ua)) os = 'macOS';
+    else if (/Android/i.test(ua))     os = 'Android';
+    else if (/iPhone|iPad/i.test(ua)) os = 'iOS';
+    else if (/Linux/i.test(ua))       os = 'Linux';
+    return {
+      device: isMobile ? 'Celular' : 'Computador',
+      os: os
+    };
+  }
+ 
+  async function enviarParaSheet(nome, telefone, device, os) {
+    if (!SHEET_URL || SHEET_URL === 'https://script.google.com/macros/s/AKfycbzQRhAI-BRMa25RKbC55FrHvVFfX4alED3gP_lfMwuxbZ1VWhnLMt7bfVLGBen6DkaC/exec') return;
+    const payload = { nome, telefone, device, os,
+      dataHora: new Date().toLocaleString('pt-BR') };
+    try {
+      await fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch(e) { console.warn('Erro ao enviar dados:', e); }
+  }
+  
 /* DOTS pag1 */
 const dotsEl=document.getElementById('dots1');
 const colors=['#FF6B1A','#FF8C42','#FF3E82','#FF6FA3','#FFB347','#FF85A1'];
